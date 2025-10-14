@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "11812583821",
+    "project_id": "taptrackapp-38817",
+    "storage_bucket": "taptrackapp-38817.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:11812583821:android:53a455e53ef10f81a4e5c4",
+        "android_client_info": {
+          "package_name": "com.example.taptrack_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAES_IjaB8IPsle8nzpLD2-halGPrtk7Bo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
