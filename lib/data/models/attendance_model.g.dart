@@ -8,16 +8,18 @@ part of 'attendance_model.dart';
 
 _AttendanceModel _$AttendanceModelFromJson(Map<String, dynamic> json) =>
     _AttendanceModel(
+      id: json['id'] as String?,
       studentId: json['studentId'] as String,
       name: json['name'] as String,
-      timestamp: DateTime.parse(json['timestamp'] as String),
+      timestamp: const TimestampConverter().fromJson(json['timestamp']),
       status: json['status'] as String,
     );
 
 Map<String, dynamic> _$AttendanceModelToJson(_AttendanceModel instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'studentId': instance.studentId,
       'name': instance.name,
-      'timestamp': instance.timestamp.toIso8601String(),
+      'timestamp': const TimestampConverter().toJson(instance.timestamp),
       'status': instance.status,
     };

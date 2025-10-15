@@ -1,20 +1,13 @@
-// lib/data/datasources/firebase_remote_data_source.dart
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/attendance_model.dart';
 
-class FirebaseRemoteDataSource {
-  final FirebaseFirestore firestore;
+abstract class FirebaseRemoteDataSource {
+  Future<List<AttendanceModel>> getAllAttendance();
 
-  FirebaseRemoteDataSource({required this.firestore});
+  Future<void> markAttendance(AttendanceModel attendance);
 
-  Future<List<AttendanceModel>> getAllAttendance() async {
-    final snapshot = await firestore.collection('attendance').get();
-    return snapshot.docs
-        .map((doc) => AttendanceModel.fromJson(doc.data()))
-        .toList();
-  }
+  Future<void> addAttendance(AttendanceModel attendance);
 
-  Future<void> markAttendance(AttendanceModel attendance) async {
-    await firestore.collection('attendance').add(attendance.toJson());
-  }
+  Future<void> updateAttendance(String id, AttendanceModel updated);
+
+  Future<void> deleteAttendance(String id);
 }

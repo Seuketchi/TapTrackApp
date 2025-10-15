@@ -7,13 +7,13 @@ import 'package:taptrack_app/domain/repositories/attendance_repository.dart';
 import '../../core/result/result.dart';
 
 @injectable
-class GetAllAttendance implements UseCase<List<Attendance>, NoParams> {
+class AddAttendance implements UseCase<void, Attendance> {
   final AttendanceRepository repository;
 
-  GetAllAttendance(this.repository);
+  AddAttendance(this.repository);
 
   @override
-  Future<Result<List<Attendance>, Failure>> call(NoParams params) async {
-    return await repository.getAllAttendance();
+  Future<Result<void, Failure>> call(Attendance attendance) async {
+    return await repository.addAttendance(attendance);
   }
 }
