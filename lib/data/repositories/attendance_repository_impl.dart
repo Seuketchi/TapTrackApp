@@ -6,11 +6,11 @@ import 'package:taptrack_app/domain/mapper/attendance_mapper.dart';
 
 import '../../domain/entities/attendance.dart';
 import '../../domain/repositories/attendance_repository.dart';
-import '../datasources/firebase_remote_data_source.dart';
+import '../datasources/firebase_attendance_remote_data_source.dart';
 
 @Singleton(as: AttendanceRepository)
 class AttendanceRepositoryImpl implements AttendanceRepository {
-  final FirebaseRemoteDataSource remoteDataSource;
+  final FirebaseAttendanceRemoteDataSource remoteDataSource;
 
   AttendanceRepositoryImpl({required this.remoteDataSource});
 

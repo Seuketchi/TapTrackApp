@@ -5,10 +5,11 @@ extension AttendanceMapper on AttendanceModel {
   Attendance toDomain() {
     return Attendance(
       id: id,
-      studentId: studentId,
+      uid: uid,
       name: name,
       timestamp: timestamp,
-      status: status,
+      attendanceStatus: attendanceStatus,
+      registrationStatus: registrationStatus,
     );
   }
 }
@@ -17,10 +18,11 @@ extension AttendanceModelMapper on Attendance {
   AttendanceModel toModel() {
     return AttendanceModel(
       id: id,
-      studentId: studentId,
+      uid: uid,
       name: name,
       timestamp: timestamp,
-      status: status,
+      attendanceStatus: attendanceStatus,
+      registrationStatus: registrationStatus,
     );
   }
 }

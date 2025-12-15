@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Attendance {
 
- String? get id; String get studentId; String get name; DateTime get timestamp; String get status;
+ String? get id; String get uid; String get name; DateTime get timestamp; String get attendanceStatus; String get registrationStatus;
 /// Create a copy of Attendance
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $AttendanceCopyWith<Attendance> get copyWith => _$AttendanceCopyWithImpl<Attenda
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Attendance&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Attendance&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.attendanceStatus, attendanceStatus) || other.attendanceStatus == attendanceStatus)&&(identical(other.registrationStatus, registrationStatus) || other.registrationStatus == registrationStatus));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,studentId,name,timestamp,status);
+int get hashCode => Object.hash(runtimeType,id,uid,name,timestamp,attendanceStatus,registrationStatus);
 
 @override
 String toString() {
-  return 'Attendance(id: $id, studentId: $studentId, name: $name, timestamp: $timestamp, status: $status)';
+  return 'Attendance(id: $id, uid: $uid, name: $name, timestamp: $timestamp, attendanceStatus: $attendanceStatus, registrationStatus: $registrationStatus)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $AttendanceCopyWith<$Res>  {
   factory $AttendanceCopyWith(Attendance value, $Res Function(Attendance) _then) = _$AttendanceCopyWithImpl;
 @useResult
 $Res call({
- String? id, String studentId, String name, DateTime timestamp, String status
+ String? id, String uid, String name, DateTime timestamp, String attendanceStatus, String registrationStatus
 });
 
 
@@ -62,13 +62,14 @@ class _$AttendanceCopyWithImpl<$Res>
 
 /// Create a copy of Attendance
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? studentId = null,Object? name = null,Object? timestamp = null,Object? status = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? uid = null,Object? name = null,Object? timestamp = null,Object? attendanceStatus = null,Object? registrationStatus = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String?,studentId: null == studentId ? _self.studentId : studentId // ignore: cast_nullable_to_non_nullable
+as String?,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as DateTime,attendanceStatus: null == attendanceStatus ? _self.attendanceStatus : attendanceStatus // ignore: cast_nullable_to_non_nullable
+as String,registrationStatus: null == registrationStatus ? _self.registrationStatus : registrationStatus // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -154,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String studentId,  String name,  DateTime timestamp,  String status)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? id,  String uid,  String name,  DateTime timestamp,  String attendanceStatus,  String registrationStatus)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Attendance() when $default != null:
-return $default(_that.id,_that.studentId,_that.name,_that.timestamp,_that.status);case _:
+return $default(_that.id,_that.uid,_that.name,_that.timestamp,_that.attendanceStatus,_that.registrationStatus);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return $default(_that.id,_that.studentId,_that.name,_that.timestamp,_that.status
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String studentId,  String name,  DateTime timestamp,  String status)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? id,  String uid,  String name,  DateTime timestamp,  String attendanceStatus,  String registrationStatus)  $default,) {final _that = this;
 switch (_that) {
 case _Attendance():
-return $default(_that.id,_that.studentId,_that.name,_that.timestamp,_that.status);case _:
+return $default(_that.id,_that.uid,_that.name,_that.timestamp,_that.attendanceStatus,_that.registrationStatus);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +196,10 @@ return $default(_that.id,_that.studentId,_that.name,_that.timestamp,_that.status
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String studentId,  String name,  DateTime timestamp,  String status)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? id,  String uid,  String name,  DateTime timestamp,  String attendanceStatus,  String registrationStatus)?  $default,) {final _that = this;
 switch (_that) {
 case _Attendance() when $default != null:
-return $default(_that.id,_that.studentId,_that.name,_that.timestamp,_that.status);case _:
+return $default(_that.id,_that.uid,_that.name,_that.timestamp,_that.attendanceStatus,_that.registrationStatus);case _:
   return null;
 
 }
@@ -210,14 +211,15 @@ return $default(_that.id,_that.studentId,_that.name,_that.timestamp,_that.status
 
 
 class _Attendance implements Attendance {
-  const _Attendance({this.id, required this.studentId, required this.name, required this.timestamp, required this.status});
+  const _Attendance({this.id, required this.uid, required this.name, required this.timestamp, required this.attendanceStatus, required this.registrationStatus});
   
 
 @override final  String? id;
-@override final  String studentId;
+@override final  String uid;
 @override final  String name;
 @override final  DateTime timestamp;
-@override final  String status;
+@override final  String attendanceStatus;
+@override final  String registrationStatus;
 
 /// Create a copy of Attendance
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +231,16 @@ _$AttendanceCopyWith<_Attendance> get copyWith => __$AttendanceCopyWithImpl<_Att
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Attendance&&(identical(other.id, id) || other.id == id)&&(identical(other.studentId, studentId) || other.studentId == studentId)&&(identical(other.name, name) || other.name == name)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.status, status) || other.status == status));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Attendance&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.timestamp, timestamp) || other.timestamp == timestamp)&&(identical(other.attendanceStatus, attendanceStatus) || other.attendanceStatus == attendanceStatus)&&(identical(other.registrationStatus, registrationStatus) || other.registrationStatus == registrationStatus));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,id,studentId,name,timestamp,status);
+int get hashCode => Object.hash(runtimeType,id,uid,name,timestamp,attendanceStatus,registrationStatus);
 
 @override
 String toString() {
-  return 'Attendance(id: $id, studentId: $studentId, name: $name, timestamp: $timestamp, status: $status)';
+  return 'Attendance(id: $id, uid: $uid, name: $name, timestamp: $timestamp, attendanceStatus: $attendanceStatus, registrationStatus: $registrationStatus)';
 }
 
 
@@ -249,7 +251,7 @@ abstract mixin class _$AttendanceCopyWith<$Res> implements $AttendanceCopyWith<$
   factory _$AttendanceCopyWith(_Attendance value, $Res Function(_Attendance) _then) = __$AttendanceCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String studentId, String name, DateTime timestamp, String status
+ String? id, String uid, String name, DateTime timestamp, String attendanceStatus, String registrationStatus
 });
 
 
@@ -266,13 +268,14 @@ class __$AttendanceCopyWithImpl<$Res>
 
 /// Create a copy of Attendance
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? studentId = null,Object? name = null,Object? timestamp = null,Object? status = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? uid = null,Object? name = null,Object? timestamp = null,Object? attendanceStatus = null,Object? registrationStatus = null,}) {
   return _then(_Attendance(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String?,studentId: null == studentId ? _self.studentId : studentId // ignore: cast_nullable_to_non_nullable
+as String?,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,timestamp: null == timestamp ? _self.timestamp : timestamp // ignore: cast_nullable_to_non_nullable
-as DateTime,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as DateTime,attendanceStatus: null == attendanceStatus ? _self.attendanceStatus : attendanceStatus // ignore: cast_nullable_to_non_nullable
+as String,registrationStatus: null == registrationStatus ? _self.registrationStatus : registrationStatus // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }

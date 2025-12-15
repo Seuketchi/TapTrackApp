@@ -46,6 +46,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '11812583821',
     projectId: 'taptrackapp-38817',
     authDomain: 'taptrackapp-38817.firebaseapp.com',
+    databaseURL: 'https://taptrackapp-38817-default-rtdb.firebaseio.com',
     storageBucket: 'taptrackapp-38817.firebasestorage.app',
   );
 
@@ -54,6 +55,7 @@ class DefaultFirebaseOptions {
     appId: '1:11812583821:android:53a455e53ef10f81a4e5c4',
     messagingSenderId: '11812583821',
     projectId: 'taptrackapp-38817',
+    databaseURL: 'https://taptrackapp-38817-default-rtdb.firebaseio.com',
     storageBucket: 'taptrackapp-38817.firebasestorage.app',
   );
 
@@ -62,6 +64,7 @@ class DefaultFirebaseOptions {
     appId: '1:11812583821:ios:5668e7466f4e20a3a4e5c4',
     messagingSenderId: '11812583821',
     projectId: 'taptrackapp-38817',
+    databaseURL: 'https://taptrackapp-38817-default-rtdb.firebaseio.com',
     storageBucket: 'taptrackapp-38817.firebasestorage.app',
     iosBundleId: 'com.example.taptrackApp',
   );
@@ -71,6 +74,7 @@ class DefaultFirebaseOptions {
     appId: '1:11812583821:ios:5668e7466f4e20a3a4e5c4',
     messagingSenderId: '11812583821',
     projectId: 'taptrackapp-38817',
+    databaseURL: 'https://taptrackapp-38817-default-rtdb.firebaseio.com',
     storageBucket: 'taptrackapp-38817.firebasestorage.app',
     iosBundleId: 'com.example.taptrackApp',
   );
@@ -81,6 +85,8 @@ class DefaultFirebaseOptions {
     messagingSenderId: '11812583821',
     projectId: 'taptrackapp-38817',
     authDomain: 'taptrackapp-38817.firebaseapp.com',
+    databaseURL: 'https://taptrackapp-38817-default-rtdb.firebaseio.com',
     storageBucket: 'taptrackapp-38817.firebasestorage.app',
   );
+
 }

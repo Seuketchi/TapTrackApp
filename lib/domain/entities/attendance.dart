@@ -7,9 +7,10 @@ part 'attendance.freezed.dart';
 abstract class Attendance with _$Attendance {
   const factory Attendance({
     String? id,
-    required String studentId,
+    required String uid,
     required String name,
     required DateTime timestamp,
-    required String status,
+    required String attendanceStatus,
+    required String registrationStatus,
   }) = _Attendance;
 }

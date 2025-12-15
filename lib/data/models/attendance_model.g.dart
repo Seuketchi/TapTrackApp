@@ -9,17 +9,19 @@ part of 'attendance_model.dart';
 _AttendanceModel _$AttendanceModelFromJson(Map<String, dynamic> json) =>
     _AttendanceModel(
       id: json['id'] as String?,
-      studentId: json['studentId'] as String,
+      uid: json['uid'] as String,
       name: json['name'] as String,
       timestamp: const TimestampConverter().fromJson(json['timestamp']),
-      status: json['status'] as String,
+      attendanceStatus: json['attendanceStatus'] as String,
+      registrationStatus: json['registrationStatus'] as String,
     );
 
 Map<String, dynamic> _$AttendanceModelToJson(_AttendanceModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'studentId': instance.studentId,
+      'uid': instance.uid,
       'name': instance.name,
       'timestamp': const TimestampConverter().toJson(instance.timestamp),
-      'status': instance.status,
+      'attendanceStatus': instance.attendanceStatus,
+      'registrationStatus': instance.registrationStatus,
     };

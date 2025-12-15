@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 
-import '../../core/widget/data_state/data_state_widget.dart';
-import '../../domain/entities/attendance.dart';
-import '../bloc/attendance_bloc.dart';
+import '../../domain/entities/user.dart';
+import '../../domain/entities/pending_user.dart';
+import '../../domain/usecases/add_user.dart';
+import '../../domain/usecases/add_pending_user.dart';
+import '../../core/di/injection_container.dart';
+import '../bloc/user_bloc.dart';
+import '../bloc/pending_user_bloc.dart';
+import 'package:taptrack_app/presentation/widgets/attendance_list_widget.dart';
+import 'package:taptrack_app/presentation/widgets/user_list_widget.dart';
+import 'package:taptrack_app/presentation/widgets/pending_user_list_widget.dart';
+import 'package:taptrack_app/presentation/widgets/attendance_dialogs.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -13,115 +20,110 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Attendance Records'),
-        centerTitle: true,
-        elevation: 2,
-        actions: [],
-      ),
-      body: BlocBuilder<AttendanceBloc, AttendanceState>(
-        builder: (context, state) {
-          return DataStateWidget<List<Attendance>>(
-            state: state.attendance,
-            loadingBuilder: (_) => Center(
-              child: CircularProgressIndicator(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            errorBuilder: (_, error, __) => Center(
-              child: Text('Error: $error', style: theme.textTheme.bodyMedium),
-            ),
-            childBuilder: (_, attendances) {
-              if (attendances.isEmpty) {
-                return Center(
-                  child: Text(
-                    'No attendance records',
-                    style: theme.textTheme.titleMedium?.copyWith(
-                      color: theme.colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                );
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('TapTrack'),
+          centerTitle: true,
+          elevation: 2,
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Attendance'),
+              Tab(text: 'Users'),
+              Tab(text: 'Pending'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            const AttendanceListWidget(),
+            UserBlocGuard(child: UserListWidget()),
+            PendingUserBlocGuard(child: PendingUserListWidget()),
+          ],
+        ),
+        floatingActionButton: Builder(builder: (context) {
+          final tabIndex = DefaultTabController.of(context).index;
+          return FloatingActionButton(
+            backgroundColor: theme.colorScheme.primary,
+            foregroundColor: theme.colorScheme.onPrimary,
+            onPressed: () {
+              if (tabIndex == 0) {
+                showAddAttendanceDialog(context);
+              } else if (tabIndex == 1) {
+                // show add user dialog
+                _showAddUserDialog(context);
+              } else {
+                // show add pending user dialog
+                _showAddPendingUserDialog(context);
               }
-
-              return RefreshIndicator(
-                color: theme.colorScheme.primary,
-                onRefresh: () async {
-                  context.read<AttendanceBloc>().add(
-                    const AttendanceEvent.getAllAttendance(),
-                  );
-                },
-                child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: attendances.length,
-                  itemBuilder: (_, i) {
-                    return _AttendanceCard(attendance: attendances[i]);
-                  },
-                ),
-              );
             },
+            child: const Icon(Icons.add),
           );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: theme.colorScheme.primary,
-        foregroundColor: theme.colorScheme.onPrimary,
-        onPressed: () => _showAddDialog(context),
-        child: const Icon(Icons.add),
+        }),
       ),
     );
   }
 
-  void _showAddDialog(BuildContext context) {
-    final theme = Theme.of(context);
+  void _showAddUserDialog(BuildContext context) {
     final nameController = TextEditingController();
-    final studentIdController = TextEditingController();
+    final uidController = TextEditingController();
 
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        surfaceTintColor: theme.colorScheme.surface,
-        title: Text('Add Attendance', style: theme.textTheme.titleLarge),
+        title: const Text('Add User'),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: 'Name',
-                labelStyle: theme.textTheme.bodyMedium,
-              ),
-            ),
-            TextField(
-              controller: studentIdController,
-              decoration: InputDecoration(
-                labelText: 'Student ID',
-                labelStyle: theme.textTheme.bodyMedium,
-              ),
-            ),
+            TextField(controller: nameController, decoration: const InputDecoration(labelText: 'Name')),
+            TextField(controller: uidController, decoration: const InputDecoration(labelText: 'UID')),
           ],
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: theme.textTheme.labelLarge),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: theme.colorScheme.onPrimary,
-            ),
             onPressed: () {
-              final newAttendance = Attendance(
-                id: null,
+              final user = User(
+                uid: uidController.text,
                 name: nameController.text,
-                studentId: studentIdController.text,
-                timestamp: DateTime.now(),
-                status: 'absent',
+                status: 'registered',
+                registeredAt: DateTime.now(),
               );
-              context.read<AttendanceBloc>().add(
-                AttendanceEvent.addAttendance(newAttendance),
+              context.read<UserBloc>().add(UserEvent.addUser(AddUserParams(user)));
+              Navigator.pop(context);
+            },
+            child: const Text('Add'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showAddPendingUserDialog(BuildContext context) {
+    final uidController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Add Pending User'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            TextField(controller: uidController, decoration: const InputDecoration(labelText: 'UID')),
+          ],
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          ElevatedButton(
+            onPressed: () {
+              final pending = PendingUser(
+                uid: uidController.text,
+                status: 'pending',
+                firstScannedAt: DateTime.now(),
+                lastScannedAt: DateTime.now(),
               );
+              context.read<PendingUserBloc>().add(PendingUserEvent.addPendingUser(AddPendingUserParams(pending)));
               Navigator.pop(context);
             },
             child: const Text('Add'),
@@ -132,172 +134,125 @@ class HomePage extends StatelessWidget {
   }
 }
 
-class _AttendanceCard extends StatelessWidget {
-  final Attendance attendance;
-  const _AttendanceCard({required this.attendance});
+/// Guard widget that tries to resolve UserBloc from GetIt.
+class UserBlocGuard extends StatefulWidget {
+  final Widget child;
+  const UserBlocGuard({required this.child, super.key});
 
-  Color _statusColor(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    switch (attendance.status.toLowerCase()) {
-      case 'present':
-        return scheme.primaryContainer;
-      case 'late':
-        return scheme.tertiaryContainer;
-      case 'absent':
-        return scheme.errorContainer;
-      default:
-        return scheme.surfaceVariant;
-    }
+  @override
+  State<UserBlocGuard> createState() => _UserBlocGuardState();
+}
+
+class _UserBlocGuardState extends State<UserBlocGuard> {
+  String? _error;
+  UserBloc? _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _tryCreate();
   }
 
-  Color _statusTextColor(BuildContext context) {
-    final scheme = Theme.of(context).colorScheme;
-    switch (attendance.status.toLowerCase()) {
-      case 'present':
-        return scheme.onPrimaryContainer;
-      case 'late':
-        return scheme.onTertiaryContainer;
-      case 'absent':
-        return scheme.onErrorContainer;
-      default:
-        return scheme.onSurfaceVariant;
+  Future<void> _tryCreate() async {
+    setState(() { _error = null; });
+    try {
+      _bloc = getIt<UserBloc>()..add(const UserEvent.getAllUsers());
+      setState(() {});
+    } catch (e) {
+      _error = e.toString();
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final timestamp = DateFormat(
-      'MMM d, yyyy – HH:mm',
-    ).format(attendance.timestamp);
+    if (_bloc != null) {
+      return BlocProvider<UserBloc>.value(value: _bloc!, child: widget.child);
+    }
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      elevation: 3,
-      color: _statusColor(context),
-      child: ListTile(
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 12,
-        ),
-        leading: CircleAvatar(
-          backgroundColor: _statusTextColor(context),
-          child: Text(
-            attendance.name[0].toUpperCase(),
-            style: theme.textTheme.titleMedium?.copyWith(
-              color: _statusColor(context),
-            ),
-          ),
-        ),
-        title: Text(
-          attendance.name,
-          style: theme.textTheme.titleMedium?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        subtitle: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const SizedBox(height: 4),
-            Text(
-              'ID: ${attendance.studentId}',
-              style: theme.textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 2),
-            Text('Time: $timestamp', style: theme.textTheme.bodySmall),
-          ],
-        ),
-        trailing: Wrap(
-          spacing: 4,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.check),
-              color: theme.colorScheme.primary,
-              tooltip: 'Mark Present',
-              onPressed: () {
-                context.read<AttendanceBloc>().add(
-                  AttendanceEvent.markAttendance(attendance),
-                );
+            const Text('Service unavailable for Users', style: TextStyle(fontSize: 16)),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(_error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+            ],
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () async {
+                await configureDependencies();
+                await _tryCreate();
               },
-            ),
-            IconButton(
-              icon: const Icon(Icons.edit),
-              color: theme.colorScheme.secondary,
-              tooltip: 'Update',
-              onPressed: () => _showUpdateDialog(context, attendance),
-            ),
-            IconButton(
-              icon: const Icon(Icons.delete),
-              color: theme.colorScheme.error,
-              tooltip: 'Delete',
-              onPressed: () {
-                context.read<AttendanceBloc>().add(
-                  AttendanceEvent.deleteAttendance(attendance.id!),
-                );
-              },
+              child: const Text('Retry'),
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  void _showUpdateDialog(BuildContext context, Attendance a) {
-    final theme = Theme.of(context);
-    final nameController = TextEditingController(text: a.name);
-    final studentIdController = TextEditingController(text: a.studentId);
+/// Guard widget that tries to resolve PendingUserBloc from GetIt.
+class PendingUserBlocGuard extends StatefulWidget {
+  final Widget child;
+  const PendingUserBlocGuard({required this.child, super.key});
 
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        surfaceTintColor: theme.colorScheme.surface,
-        title: Text('Update Attendance', style: theme.textTheme.titleLarge),
-        content: Column(
+  @override
+  State<PendingUserBlocGuard> createState() => _PendingUserBlocGuardState();
+}
+
+class _PendingUserBlocGuardState extends State<PendingUserBlocGuard> {
+  String? _error;
+  PendingUserBloc? _bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _tryCreate();
+  }
+
+  Future<void> _tryCreate() async {
+    setState(() { _error = null; });
+    try {
+      _bloc = getIt<PendingUserBloc>()..add(const PendingUserEvent.getAllPendingUsers());
+      setState(() {});
+    } catch (e) {
+      _error = e.toString();
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_bloc != null) {
+      return BlocProvider<PendingUserBloc>.value(value: _bloc!, child: widget.child);
+    }
+
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            TextField(
-              controller: nameController,
-              decoration: InputDecoration(
-                labelText: 'Name',
-                labelStyle: theme.textTheme.bodyMedium,
-              ),
-            ),
-            TextField(
-              controller: studentIdController,
-              decoration: InputDecoration(
-                labelText: 'Student ID',
-                labelStyle: theme.textTheme.bodyMedium,
-              ),
+            const Text('Service unavailable for Pending Users', style: TextStyle(fontSize: 16)),
+            if (_error != null) ...[
+              const SizedBox(height: 8),
+              Text(_error!, style: const TextStyle(color: Colors.red), textAlign: TextAlign.center),
+            ],
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () async {
+                await configureDependencies();
+                await _tryCreate();
+              },
+              child: const Text('Retry'),
             ),
           ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: Text('Cancel', style: theme.textTheme.labelLarge),
-          ),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: theme.colorScheme.primary,
-              foregroundColor: theme.colorScheme.onPrimary,
-            ),
-            onPressed: () {
-              final updatedAttendance = Attendance(
-                id: a.id,
-                name: nameController.text,
-                studentId: studentIdController.text,
-                timestamp: a.timestamp,
-                status: a.status,
-              );
-              context.read<AttendanceBloc>().add(
-                AttendanceEvent.updateAttendance(a.id!, updatedAttendance),
-              );
-              Navigator.pop(context);
-            },
-            child: const Text('Update'),
-          ),
-        ],
       ),
     );
   }

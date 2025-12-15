@@ -1,41 +1,60 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:injectable/injectable.dart';
-
 import '../models/attendance_model.dart';
-import 'firebase_remote_data_source.dart';
+import 'firebase_attendance_remote_data_source.dart';
 
-@Singleton(as: FirebaseRemoteDataSource)
-class FirebaseRemoteDataSourceImpl implements FirebaseRemoteDataSource {
-  final FirebaseFirestore firestore;
+@Singleton(as: FirebaseAttendanceRemoteDataSource)
+class FirebaseAttendanceRemoteDataSourceImpl implements FirebaseAttendanceRemoteDataSource {
+  final FirebaseDatabase database;
 
-  FirebaseRemoteDataSourceImpl({required this.firestore});
+  FirebaseAttendanceRemoteDataSourceImpl({required this.database});
 
   @override
   Future<List<AttendanceModel>> getAllAttendance() async {
-    final snapshot = await firestore.collection('attendance').get();
-    return snapshot.docs
-        .map((doc) => AttendanceModel.fromJson(doc.data()).copyWith(id: doc.id))
-        .toList();
+    final snapshot = await database.ref('attendance').get();
+
+    if (!snapshot.exists) return [];
+
+    final data = Map<String, dynamic>.from(snapshot.value as Map);
+
+    return data.entries.map((entry) {
+      return AttendanceModel.fromJson(
+        Map<String, dynamic>.from(entry.value),
+      ).copyWith(id: entry.key);
+    }).toList();
   }
 
   @override
   Future<void> markAttendance(AttendanceModel attendance) async {
-    await firestore.collection('attendance').add(attendance.toJson());
+    await database.ref('attendance').push().set(attendance.toJson());
   }
 
   @override
   Future<void> addAttendance(AttendanceModel attendance) async {
-    // For now addAttendance performs the same action as markAttendance.
-    await firestore.collection('attendance').add(attendance.toJson());
+    await markAttendance(attendance);
   }
 
   @override
   Future<void> updateAttendance(String id, AttendanceModel updated) async {
-    await firestore.collection('attendance').doc(id).update(updated.toJson());
+    await database.ref('attendance/$id').update(updated.toJson());
   }
 
   @override
   Future<void> deleteAttendance(String id) async {
-    await firestore.collection('attendance').doc(id).delete();
+    await database.ref('attendance/$id').remove();
+  }
+
+  @override
+  Stream<List<AttendanceModel>> watchAttendance() {
+    return database.ref('attendance').onValue.map((event) {
+      if (event.snapshot.value == null) return [];
+      final data = Map<String, dynamic>.from(event.snapshot.value as Map);
+
+      return data.entries.map((entry) {
+        return AttendanceModel.fromJson(
+          Map<String, dynamic>.from(entry.value),
+        ).copyWith(id: entry.key);
+      }).toList();
+    });
   }
 }

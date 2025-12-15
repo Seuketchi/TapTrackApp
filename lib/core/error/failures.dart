@@ -29,3 +29,10 @@ class UnexpectedFailure implements Failure {
 
   UnexpectedFailure(this.message);
 }
+
+class UserNotFoundFailure implements Failure {
+  @override
+  final String message;
+
+  UserNotFoundFailure({this.message = 'User not found'});
+}
